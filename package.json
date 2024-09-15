@@ -15,6 +15,7 @@
   "author": "Kamlesh saini",
   "license": "ISC",
   "devDependencies": {
-    "nodeman": "^1.1.2"
+    "nodeman": "^1.1.2",
+    "prettier": "^3.3.3"
   }
 }

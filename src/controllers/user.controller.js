@@ -38,7 +38,7 @@ const registerUser = asyncHandler( async (req, res) => {
     }
 
     // step-3 Check user already exists or not !
-    const existedUSer = User.findOne({
+    const existedUSer = await User.findOne({
         $or: [{ username }, { email }]
     })
 
@@ -48,8 +48,13 @@ const registerUser = asyncHandler( async (req, res) => {
 
     // step-4 Check for images, check for avatar
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path; 
+    // const coverImageLocalPath = req.files?.coverImage?.[0]?.path; 
     // ye file abhi local server pr h cloudinary pr upload nhi hue h
+
+    let coverImageLocalPath;
+    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+        coverImageLocalPath = req.files.coverImage[0].path;
+    }
 
     if(!avatarLocalPath){
         throw new apiError(400, "avatar file is required")
@@ -59,10 +64,10 @@ const registerUser = asyncHandler( async (req, res) => {
 
     const avatar = await uploadOnCloudinary(avatarLocalPath);
     // await ka use krte h kuki file upload hone m time lag shekta h isliye starting me bhi async ka use liya h jisse fast ho 
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+    const coverImage =  await uploadOnCloudinary(coverImageLocalPath);
 
     if(!avatar){
-        throw new apiError(400, "avatar file is required")
+        throw new apiError(400, "Avatar file is required")
     }
 
     // step-6 create the object = create entry in DB
